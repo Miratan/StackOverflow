@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,13 @@ public class MainActivityFragment extends Fragment {
 
 
 		mAdapter = new MainActivityAdapter(getActivity());
+		mAdapter.setOnItemClickListener(new MainActivityAdapter.OnItemClickListener() {
+			@Override
+			public void onItemClick(final ItemDTO item) {
+				Toast.makeText(getContext(), item.getDesc(), Toast.LENGTH_SHORT).show();
+				//FIXME - carregar as 20 questões mais recentes que possuem a tag associada ao tópico
+			}
+		});
 
 		List<ItemDTO> data = new ArrayList<>();
 		createList(data);

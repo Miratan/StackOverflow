@@ -33,6 +33,10 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 		this.context = context;
 	}
 
+	public void setOnItemClickListener(OnItemClickListener listener) {
+		this.listener = listener;
+	}
+
 	@Override
 	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_item, parent, false));
