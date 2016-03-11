@@ -1,5 +1,6 @@
 package mlehmkuhl.stackoverflow;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -7,8 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +35,7 @@ public class MainActivityFragment extends Fragment {
 		mAdapter.setOnItemClickListener(new MainActivityAdapter.OnItemClickListener() {
 			@Override
 			public void onItemClick(final ItemDTO item) {
-				Toast.makeText(getContext(), item.getDesc(), Toast.LENGTH_SHORT).show();
-				//FIXME - carregar as 20 questões mais recentes que possuem a tag associada ao tópico
+				openQuestionActivity(item);
 			}
 		});
 
@@ -52,6 +50,41 @@ public class MainActivityFragment extends Fragment {
 
 		return view;
 	}
+
+
+	private void openQuestionActivity(ItemDTO item) {
+
+		Intent intent = new Intent(getContext(), QuestionActivity.class);
+		Bundle b = new Bundle();
+
+		switch (item.getId()) {
+			case 0:
+				//android
+				b.putInt("tag", 0);
+				break;
+			case 1:
+				//java
+				b.putInt("tag", 1);
+				break;
+			case 2:
+				//android-studio
+				b.putInt("tag", 2);
+				break;
+			case 3:
+				//marshmallow
+				b.putInt("tag", 3);
+				break;
+			case 4:
+				//nexus
+				b.putInt("tag", 4);
+				break;
+		}
+
+		intent.putExtras(b);
+		startActivity(intent);
+	}
+
+
 
 	private void createList(List<ItemDTO> data) {
 
