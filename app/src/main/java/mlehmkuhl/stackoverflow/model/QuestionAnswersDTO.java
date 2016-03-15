@@ -2,6 +2,7 @@ package mlehmkuhl.stackoverflow.model;
 
 public class QuestionAnswersDTO {
 
+	private int id;
 	private String profile;
 	private String name;
 	private String answers;
@@ -9,6 +10,13 @@ public class QuestionAnswersDTO {
 	private String title;
 	private String question;
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public String getProfile() {
 		return profile;

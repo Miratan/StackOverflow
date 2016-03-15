@@ -1,6 +1,9 @@
 package mlehmkuhl.stackoverflow;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
@@ -11,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -24,6 +26,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import mlehmkuhl.stackoverflow.adapter.QuestionAnswersActivityAdapter;
+import mlehmkuhl.stackoverflow.db.StackOverflowDB;
 import mlehmkuhl.stackoverflow.model.QuestionAnswersDTO;
 import mlehmkuhl.stackoverflow.ui.DividerItemDecoration;
 
@@ -58,7 +61,6 @@ public class QuestionAnswersActivityFragment extends Fragment {
 		mAdapter.setOnItemClickListener(new QuestionAnswersActivityAdapter.OnItemClickListener() {
 			@Override
 			public void onItemClick(final QuestionAnswersDTO item) {
-				Toast.makeText(getContext(), item.getProfile(), Toast.LENGTH_SHORT).show();
 			}
 		});
 
@@ -96,40 +98,54 @@ public class QuestionAnswersActivityFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(Object object) {
-			LinkedHashMap map = (LinkedHashMap) object;
-			ArrayList items = (ArrayList) map.get("items");
+			if(object != null){
+				LinkedHashMap map = (LinkedHashMap) object;
+				ArrayList items = (ArrayList) map.get("items");
 
-			List<QuestionAnswersDTO> data = new ArrayList<>();
+				List<QuestionAnswersDTO> data = new ArrayList<>();
 
-			for(int i = 0 ; i < items.size(); i++){
-				LinkedHashMap item = (LinkedHashMap) items.get(i);
-				LinkedHashMap owner = (LinkedHashMap) item.get("owner");
-				String profile = owner.get("profile_image").toString();
-				String name = owner.get("display_name").toString();
-				String answers = (String) item.get("body");
+				StackOverflowDB db = new StackOverflowDB(getContext());
 
-				QuestionAnswersDTO dto = new QuestionAnswersDTO();
-				dto.setName(name);
-				dto.setProfile(profile);
-				dto.setAnswers(answers);
-				if(i == 0){
-					dto.setQuestion(question);
-					dto.setTitle(title);
+				for(int i = 0 ; i < items.size(); i++){
+					LinkedHashMap item = (LinkedHashMap) items.get(i);
+					LinkedHashMap owner = (LinkedHashMap) item.get("owner");
+					String profile = owner.get("profile_image").toString();
+					String name = owner.get("display_name").toString();
+					String answers = item.get("body").toString();
+					int id = (int) item.get("answer_id");
+
+					QuestionAnswersDTO dto = new QuestionAnswersDTO();
+					dto.setId(id);
+					dto.setName(name);
+					dto.setProfile(profile);
+					dto.setAnswers(answers);
+					if(i == 0){
+						dto.setQuestion(question);
+						dto.setTitle(title);
+					}
+
+					db.insert(dto);
+					data.add(dto);
 				}
 
-				data.add(dto);
-			}
+				if(items.size() == 0){
+					QuestionAnswersDTO dto = new QuestionAnswersDTO();
+					dto.setQuestion(question);
+					dto.setTitle(title);
+					data.add(dto);
+				}
 
-			if(items.size() == 0){
-				QuestionAnswersDTO dto = new QuestionAnswersDTO();
-				dto.setQuestion(question);
-				dto.setTitle(title);
-				data.add(dto);
-			}
+				mAdapter.swapData(data);
 
-			mAdapter.swapData(data);
+			}else{
+
+				NetworkInfo info = ((ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+				if (info == null){
+					Toast.makeText(getContext(), "Verifique sua conexão com a internet", Toast.LENGTH_SHORT).show();
+				}
+
+			}
 			dismissProgressDialog();
-
 		}
 	}
 

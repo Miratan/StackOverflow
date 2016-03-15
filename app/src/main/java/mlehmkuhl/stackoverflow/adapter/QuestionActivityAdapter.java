@@ -2,6 +2,7 @@ package mlehmkuhl.stackoverflow.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,7 @@ public class QuestionActivityAdapter extends RecyclerView.Adapter<QuestionActivi
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		QuestionDTO dto = questions.get(position);
-		holder.title.setText(dto.getTitle());
+		holder.title.setText(Html.fromHtml(dto.getTitle()));
 		holder.userName.setText(dto.getUserName());
 		holder.score.setText(String.valueOf(dto.getScore()));
 

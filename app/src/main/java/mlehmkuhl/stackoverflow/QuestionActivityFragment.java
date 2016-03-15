@@ -1,7 +1,10 @@
 package mlehmkuhl.stackoverflow;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
@@ -12,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -23,6 +27,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import mlehmkuhl.stackoverflow.adapter.QuestionActivityAdapter;
+import mlehmkuhl.stackoverflow.db.StackOverflowDB;
 import mlehmkuhl.stackoverflow.model.QuestionDTO;
 import mlehmkuhl.stackoverflow.ui.DividerItemDecoration;
 
@@ -121,33 +126,48 @@ public class QuestionActivityFragment extends Fragment {
 
 		@Override
 		protected void onPostExecute(Object object) {
-			LinkedHashMap map = (LinkedHashMap) object;
-			ArrayList items = (ArrayList) map.get("items");
 
-			List<QuestionDTO> data = new ArrayList<>();
+			if(object != null){
 
-			for(int i = 0 ; i < items.size(); i++){
-				LinkedHashMap item = (LinkedHashMap) items.get(i);
-				LinkedHashMap owner = (LinkedHashMap) item.get("owner");
-				int score = (int) item.get("score");
-				String title = (String) item.get("title").toString();
-				String question = (String) item.get("body").toString();
-				int questionId = (int) item.get("question_id");
-				String profile = owner.get("profile_image").toString();
-				String name = owner.get("display_name").toString();
+				LinkedHashMap map = (LinkedHashMap) object;
+				ArrayList items = (ArrayList) map.get("items");
 
-				QuestionDTO dto = new QuestionDTO();
-				dto.setTitle(title);
-				dto.setScore(score);
-				dto.setUserName(name);
-				dto.setUserProfile(profile);
-				dto.setId(questionId);
-				dto.setQuestion(question);
+				List<QuestionDTO> data = new ArrayList<>();
 
-				data.add(dto);
+				StackOverflowDB db = new StackOverflowDB(getContext());
+
+				for(int i = 0 ; i < items.size(); i++){
+					LinkedHashMap item = (LinkedHashMap) items.get(i);
+					LinkedHashMap owner = (LinkedHashMap) item.get("owner");
+					int score = (int) item.get("score");
+					String title = item.get("title").toString();
+					String question = item.get("body").toString();
+					int questionId = (int) item.get("question_id");
+					String profile = owner.get("profile_image").toString();
+					String name = owner.get("display_name").toString();
+
+					QuestionDTO dto = new QuestionDTO();
+					dto.setTitle(title);
+					dto.setScore(score);
+					dto.setUserName(name);
+					dto.setUserProfile(profile);
+					dto.setId(questionId);
+					dto.setQuestion(question);
+
+					db.insert(dto);
+					data.add(dto);
+				}
+
+				mAdapter.swapData(data);
+
+			}else{
+
+				NetworkInfo info = ((ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+				if (info == null){
+					Toast.makeText(getContext(), "Verifique sua conexão com a internet", Toast.LENGTH_SHORT).show();
+				}
+
 			}
-
-			mAdapter.swapData(data);
 			dismissProgressDialog();
 
 		}

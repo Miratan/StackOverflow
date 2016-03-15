@@ -2,6 +2,7 @@ package mlehmkuhl.stackoverflow.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,8 +53,8 @@ public class QuestionAnswersActivityAdapter extends RecyclerView.Adapter<Questio
 
 		if(dto.getTitle() != null && !dto.getTitle().isEmpty()){
 			holder.questionDetails.setVisibility(View.VISIBLE);
-			holder.question.setText(dto.getQuestion());
-			holder.title.setText(dto.getTitle());
+			holder.question.setText(Html.fromHtml(dto.getQuestion()));
+			holder.title.setText(Html.fromHtml(dto.getTitle()));
 		}
 
 		if(dto.getName()!= null){
@@ -71,7 +72,7 @@ public class QuestionAnswersActivityAdapter extends RecyclerView.Adapter<Questio
 		}
 
 		if(dto.getAnswers() != null){
-			holder.answers.setText(dto.getAnswers());
+			holder.answers.setText(Html.fromHtml(dto.getAnswers()));
 		}
 
 	}

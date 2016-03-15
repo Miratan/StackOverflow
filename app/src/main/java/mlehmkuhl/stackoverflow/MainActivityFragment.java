@@ -59,32 +59,24 @@ public class MainActivityFragment extends Fragment {
 
 		switch (item.getId()) {
 			case 0:
-				//android
 				b.putInt("tag", 0);
 				break;
 			case 1:
-				//java
 				b.putInt("tag", 1);
 				break;
 			case 2:
-				//android-studio
 				b.putInt("tag", 2);
 				break;
 			case 3:
-				//marshmallow
 				b.putInt("tag", 3);
 				break;
 			case 4:
-				//nexus
 				b.putInt("tag", 4);
 				break;
 		}
-
 		intent.putExtras(b);
 		startActivity(intent);
 	}
-
-
 
 	private void createList(List<ItemDTO> data) {
 

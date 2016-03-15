@@ -2,6 +2,7 @@
 <manifest package="mlehmkuhl.stackoverflow"
 		  xmlns:android="http://schemas.android.com/apk/res/android">
 
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 	<uses-permission android:name="android.permission.INTERNET"/>
 
 	<application
@@ -29,6 +30,12 @@
 			android:theme="@style/AppTheme"
 			android:label="@string/title_activity_question_answers">
 		</activity>
+
+		<provider
+			android:name=".db.StackOverflowContentProvider"
+			android:authorities="mlehmkuhl.stackoverflow.db"
+			android:exported="false" />
+
 	</application>
 
 </manifest>
